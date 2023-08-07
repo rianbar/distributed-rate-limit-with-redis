@@ -1,7 +1,7 @@
 package com.example.limitation.configs;
 
 import com.example.limitation.domain.user.UserModel;
-import com.example.limitation.domain.user.UserService;
+import com.example.limitation.domain.services.UserService;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.BucketConfiguration;

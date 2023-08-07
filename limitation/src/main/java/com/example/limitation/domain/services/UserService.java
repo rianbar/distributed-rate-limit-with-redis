@@ -1,5 +1,7 @@
-package com.example.limitation.domain.user;
+package com.example.limitation.domain.services;
 
+import com.example.limitation.domain.user.UserModel;
+import com.example.limitation.domain.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
