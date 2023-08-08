@@ -6,12 +6,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.UUID;
 
 @Component
@@ -24,11 +27,17 @@ public class RequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        final String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
+
         if(request.getRequestURI().startsWith("/v1")) {
-            String tenantId = request.getHeader("X-Tenant");
-            if(!tenantId.isEmpty()) {
-                UUID parseUUID = UUID.fromString(tenantId);
-                Bucket bucket = rateLimiter.resolveBucket(parseUUID);
+            if(authorization != null && authorization.toLowerCase().startsWith("basic")) {
+                // Authorization: Basic base64credentials
+                String base64Credentials = authorization.substring("Basic".length()).trim();
+                byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
+                String credentials = new String(credDecoded, StandardCharsets.UTF_8);
+                // credentials = username:password
+                final String[] values = credentials.split(":", 2);
+                Bucket bucket = rateLimiter.resolveBucket(values[0]);
                 if (bucket.tryConsume(1)) {
                     filterChain.doFilter(request, response);
                 } else {

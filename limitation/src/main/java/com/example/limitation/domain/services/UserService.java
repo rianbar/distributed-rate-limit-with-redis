@@ -1,20 +1,21 @@
 package com.example.limitation.domain.services;
 
-import com.example.limitation.domain.user.UserModel;
-import com.example.limitation.domain.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     @Autowired
-    UserRepository userRepository;
+    InMemoryUserDetailsManager manager;
 
-    public Optional<UserModel> getUser(UUID id) {
-        return userRepository.findById(id);
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return manager.loadUserByUsername(username);
     }
 }
