@@ -7,15 +7,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Service;
 
-
 @Service
-public class UserService implements UserDetailsService {
+public class InMemoryUserService implements UserDetailsService {
 
     @Autowired
-    InMemoryUserDetailsManager manager;
+    InMemoryUserDetailsManager inMemoryUserDetailsManager;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return manager.loadUserByUsername(username);
+        System.out.println(inMemoryUserDetailsManager.userExists(username));
+        return inMemoryUserDetailsManager.loadUserByUsername(username);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.limitation.configs;
 
+import com.example.limitation.domain.services.InMemoryUserService;
 import io.github.bucket4j.Bucket;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,19 +10,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.UUID;
 
 @Component
 public class RequestFilter extends OncePerRequestFilter {
 
     @Autowired
     RateLimiterConfig rateLimiter;
+
+    @Autowired
+    InMemoryUserService userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -37,7 +41,13 @@ public class RequestFilter extends OncePerRequestFilter {
                 String credentials = new String(credDecoded, StandardCharsets.UTF_8);
                 // credentials = username:password
                 final String[] values = credentials.split(":", 2);
-                Bucket bucket = rateLimiter.resolveBucket(values[0]);
+                String username = values[0];
+
+
+                UserDetails user = userService.loadUserByUsername(username);
+                String authority = String.valueOf(user.getAuthorities().iterator().next());
+
+                Bucket bucket = rateLimiter.resolveBucket(authority);
                 if (bucket.tryConsume(1)) {
                     filterChain.doFilter(request, response);
                 } else {
