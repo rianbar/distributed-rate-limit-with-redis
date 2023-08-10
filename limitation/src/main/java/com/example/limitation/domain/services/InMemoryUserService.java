@@ -15,7 +15,7 @@ public class InMemoryUserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println(inMemoryUserDetailsManager.userExists(username));
         return inMemoryUserDetailsManager.loadUserByUsername(username);
     }
 }
+
