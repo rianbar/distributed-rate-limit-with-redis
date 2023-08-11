@@ -1,6 +1,6 @@
 package com.example.limitation.configs;
 
-import com.example.limitation.domain.services.InMemoryUserService;
+import com.example.limitation.domain.user.UserService;
 import io.github.bucket4j.Bucket;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -25,7 +25,7 @@ public class RequestFilter extends OncePerRequestFilter {
     RateLimiterConfig rateLimiter;
 
     @Autowired
-    InMemoryUserService userService;
+    UserService userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -42,7 +42,6 @@ public class RequestFilter extends OncePerRequestFilter {
                 // credentials = username:password
                 final String[] values = credentials.split(":", 2);
                 String username = values[0];
-
 
                 UserDetails user = userService.loadUserByUsername(username);
                 String authority = String.valueOf(user.getAuthorities().iterator().next());

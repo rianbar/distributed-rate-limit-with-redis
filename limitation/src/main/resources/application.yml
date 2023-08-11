@@ -13,5 +13,5 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     database: postgresql
